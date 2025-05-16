@@ -1,0 +1,61 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Logs ###
+*.log
+logs/
+
+### Properties ###
+src/main/resources/application-*.properties
+!src/main/resources/application.properties
+!src/main/resources/application-example.properties
+
+### H2 Database ###
+*.db
+*.mv.db
+*.trace.db
+
+### System Files ###
+.DS_Store
+Thumbs.db
+
+### Node (caso você use Node.js para front-end) ###
+node_modules/
+npm-debug.log
+yarn-error.log
+
+### JWT keys ###
+*.jks
+*.p12
+*.pem
