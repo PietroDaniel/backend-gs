@@ -65,18 +65,7 @@ Com as seguintes configurações:
 
 ### Autenticação
 
-- **POST /api/auth/signup**: Cadastro de usuários
-  ```json
-  {
-    "name": "Nome Completo",
-    "email": "email@exemplo.com",
-    "password": "senha123",
-    "confirmPassword": "senha123",
-    "birthDate": "2000-01-01"
-  }
-  ```
-
-- **POST /api/auth/signin**: Login
+- **POST /signin**: Login
   ```json
   {
     "email": "email@exemplo.com",
@@ -93,11 +82,22 @@ Com as seguintes configurações:
   }
   ```
 
+- **POST /signup**: Cadastro de usuários
+  ```json
+  {
+    "name": "Nome Completo",
+    "email": "email@exemplo.com",
+    "password": "senha123",
+    "confirmPassword": "senha123",
+    "birthDate": "2000-01-01"
+  }
+  ```
+
 ### Itens de Senha (necessita autenticação)
 
-- **GET /api/items**: Listar todos os items de senha do usuário
+- **GET /items**: Listar todos os items de senha do usuário
 
-- **POST /api/items**: Adicionar um novo item
+- **POST /item**: Adicionar um novo item
   ```json
   {
     "name": "Facebook",
@@ -105,8 +105,15 @@ Com as seguintes configurações:
   }
   ```
 
-- **DELETE /api/items/{id}**: Deletar um item de senha
+- **GET /item/{id}**: Buscar um item de senha por ID
+
+- **DELETE /item/{id}**: Deletar um item de senha
 
 ## Frontend
 
-O frontend do aplicativo está disponível em: [gerador-de-senhas-pietro](../gerador-de-senhas-pietro) 
+O frontend do aplicativo está disponível em: [gerador-de-senhas-pietro](../gerador-de-senhas-pietro)
+
+### Requisitos para o Frontend
+
+- Node.js 18.x ou superior
+- npm 9.x ou superior 

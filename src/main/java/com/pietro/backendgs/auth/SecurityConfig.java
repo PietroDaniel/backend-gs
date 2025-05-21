@@ -1,6 +1,6 @@
-package com.pietro.backendgs.config;
+package com.pietro.backendgs.auth;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -8,11 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -24,14 +22,9 @@ import com.pietro.backendgs.security.AuthTokenFilter;
 import com.pietro.backendgs.security.JwtAuthenticationEntryPoint;
 import com.pietro.backendgs.security.UserDetailsServiceImpl;
 
-/**
- * Security configuration for the application.
- * Uses JWT-based authentication with token filtering.
- */
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
-public class WebSecurityConfig {
+public class SecurityConfig {
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
@@ -59,7 +52,7 @@ public class WebSecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new PasswordHasher();
     }
 
     @Bean
@@ -71,11 +64,19 @@ public class WebSecurityConfig {
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/test/**").permitAll()
+                .requestMatchers("/signin").permitAll()
+                .requestMatchers("/signup").permitAll()
+                .requestMatchers("/api/signin").permitAll()
+                .requestMatchers("/api/signup").permitAll()
+                .requestMatchers("/api/register").permitAll()
+                .requestMatchers("/register").permitAll()
+                .requestMatchers("/test").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             );
 
+        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
+        
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         
@@ -85,10 +86,16 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
-        configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8081", "http://127.0.0.1:8081")); 
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Access-Control-Allow-Origin",
+				"Access-Control-Allow-Headers", "Access-Control-Expose-Headers", "Accept", "Origin", "X-Requested-With",
+				"Access-Control-Request-Method", "Access-Control-Request-Headers", "Access-Control-Allow-Credentials",
+				"Content-Length", "Content-Encoding", "Connection"));
+
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000/*", "http://localhost:8081/*", "http://127.0.0.1:8081/*"));
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PasswordItemRequest {
+public class SenhaRequest {
     
     @NotBlank(message = "O nome do item é obrigatório")
     private String name;

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PasswordItemResponse {
+public class SenhaResponse {
     private Long id;
     private String name;
     private String password;

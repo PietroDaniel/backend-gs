@@ -8,7 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pietro.backendgs.model.entity.User;
+import com.pietro.backendgs.model.entity.Usuario;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,12 +29,12 @@ public class UserDetailsImpl implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public static UserDetailsImpl build(User user) {
+    public static UserDetailsImpl build(Usuario usuario) {
         return UserDetailsImpl.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .password(user.getPassword())
+                .id(usuario.getIdUsuario())
+                .name(usuario.getNome())
+                .email(usuario.getEmail())
+                .password(usuario.getSenha())
                 .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
                 .build();
     }
