@@ -54,12 +54,14 @@ public class SenhaService {
 		senhaRepository.findByIdSenhaAndUsuario(senhaId, usuarioAutenticado)
 				.orElseThrow(() -> new GsException("Senha não encontrada ou não pertence ao usuário atual.", HttpStatus.NOT_FOUND));
 		
+		// Delete físico: remover o registro do banco de dados
 		senhaRepository.deleteById(senhaId);
 	}
 
 	public List<SenhaResponse> listarSenhasDoUsuario() throws GsException {
 		Usuario usuarioAutenticado = authService.getUsuarioAutenticado();
 		List<Senha> senhas = senhaRepository.findByUsuario(usuarioAutenticado);
+		
 		return senhas.stream()
 				.map(this::convertToResponse)
 				.collect(Collectors.toList());
