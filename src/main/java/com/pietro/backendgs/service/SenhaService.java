@@ -75,6 +75,17 @@ public class SenhaService {
 		return convertToResponse(senha);
 	}
 	
+	public void excluirTodasSenhasDoUsuario() throws GsException {
+		Usuario usuarioAutenticado = authService.getUsuarioAutenticado();
+		List<Senha> senhasDoUsuario = senhaRepository.findByUsuario(usuarioAutenticado);
+		
+		if (senhasDoUsuario.isEmpty()) {
+			throw new GsException("Nenhuma senha encontrada para exclusão.", HttpStatus.NOT_FOUND);
+		}
+		
+		senhaRepository.deleteAll(senhasDoUsuario);
+	}
+	
 	private SenhaResponse convertToResponse(Senha senha) {
 		SenhaResponse response = new SenhaResponse();
 		response.setId(senha.getIdSenha());

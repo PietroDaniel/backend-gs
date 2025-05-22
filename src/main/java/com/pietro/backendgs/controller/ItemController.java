@@ -56,6 +56,16 @@ public class ItemController {
         }
     }
     
+    @DeleteMapping("/items")
+    public ResponseEntity<?> excluirTodasSenhas() {
+        try {
+            senhaService.excluirTodasSenhasDoUsuario();
+            return ResponseEntity.ok().body("Todas as senhas foram excluídas com sucesso");
+        } catch (GsException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        }
+    }
+    
     @GetMapping("/item/{id}")
     public ResponseEntity<?> buscarItemPorId(@PathVariable Long id) {
         try {
