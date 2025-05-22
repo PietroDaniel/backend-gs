@@ -34,15 +34,27 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
-            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                String username = jwtUtils.getUsernameFromJwtToken(jwt);
+            log.debug("Request to: {} {}", request.getMethod(), request.getRequestURI());
+            
+            if (jwt != null) {
+                log.debug("JWT token found in request: {}", jwt.substring(0, Math.min(jwt.length(), 10)) + "...");
+                
+                if (jwtUtils.validateJwtToken(jwt)) {
+                    String username = jwtUtils.getUsernameFromJwtToken(jwt);
+                    log.debug("JWT validated successfully for user: {}", username);
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    log.debug("Authentication set in SecurityContext");
+                } else {
+                    log.warn("JWT token validation failed");
+                }
+            } else {
+                log.debug("No JWT token found in request");
             }
         } catch (Exception e) {
             log.error("Não foi possível autenticar o usuário: {}", e.getMessage());
@@ -53,6 +65,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
+        log.debug("Authorization header: {}", headerAuth != null ? 
+                (headerAuth.length() > 15 ? headerAuth.substring(0, 15) + "..." : headerAuth) : "null");
 
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
             return headerAuth.substring(7);

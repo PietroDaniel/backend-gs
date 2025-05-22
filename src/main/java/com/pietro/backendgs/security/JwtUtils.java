@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -33,13 +34,16 @@ public class JwtUtils {
 
     public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-
-        return Jwts.builder()
+        
+        String token = Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
                 .signWith(getSigningKey())
                 .compact();
+        
+        log.debug("Generated JWT token for user: {}", userPrincipal.getUsername());
+        return token;
     }
 
     public String getUsernameFromJwtToken(String token) {
@@ -53,10 +57,26 @@ public class JwtUtils {
 
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parserBuilder()
+            Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
-                .parseClaimsJws(authToken);
+                .parseClaimsJws(authToken)
+                .getBody();
+            
+            // Check if token is expired
+            Date expiration = claims.getExpiration();
+            Date now = new Date();
+            if (expiration != null && expiration.before(now)) {
+                log.error("JWT token is expired. Expiration: {}, Current time: {}", expiration, now);
+                return false;
+            }
+            
+            // Additional debug information
+            String subject = claims.getSubject();
+            Date issuedAt = claims.getIssuedAt();
+            log.debug("JWT token validated successfully. Subject: {}, Issued at: {}, Expires: {}", 
+                    subject, issuedAt, expiration);
+            
             return true;
         } catch (SignatureException e) {
             log.error("Invalid JWT signature: {}", e.getMessage());
