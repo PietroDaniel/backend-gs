@@ -201,6 +201,38 @@ backend-gs/
 │   └── jwt.properties        # Configurações JWT
 ```
 
+## Endpoints da API
+
+### Autenticação
+
+- **POST /signin**: Login de usuário
+  - Payload: `{ "email": "string", "password": "string" }`
+  - Resposta: `{ "token": "string", "id": number, "name": "string", "email": "string" }`
+
+- **POST /signup**: Cadastro de usuário
+  - Payload: `{ "name": "string", "email": "string", "password": "string", "confirmPassword": "string", "birthDate": "YYYY-MM-DD" }`
+  - Resposta: Mensagem de sucesso ou erro
+
+### Itens
+
+- **POST /item**: Criar novo item
+  - Payload: `{ "name": "string", "password": "string" }`
+  - Resposta: Item criado com ID
+
+- **GET /items**: Listar todos os itens do usuário
+  - Resposta: Lista de itens
+
+- **DELETE /item/:id**: Excluir um item específico
+  - Resposta: Mensagem de confirmação
+
+- **GET /item/:id**: Buscar um item específico por ID
+  - Resposta: Detalhes do item
+
+### Teste
+
+- **GET /test**: Verificar se a API está funcionando
+  - Resposta: Status da API
+
 ## Solucionando problemas comuns
 
 ### Problemas com o MySQL
@@ -294,52 +326,4 @@ mvn test -Dtest=AuthServiceTest
 
 # Limpar cache Maven (útil para resolver problemas de dependências)
 mvn dependency:purge-local-repository
-```
-
-## Endpoints da API
-
-### Autenticação
-
-- **POST /signin**: Login
-  ```json
-  {
-    "email": "email@exemplo.com",
-    "password": "senha123"
-  }
-  ```
-  Retorno: 
-  ```json
-  {
-    "token": "eyJhbGciOiJIUzUxMiJ9...",
-    "id": 1,
-    "name": "Nome Completo",
-    "email": "email@exemplo.com"
-  }
-  ```
-
-- **POST /signup**: Cadastro de usuários
-  ```json
-  {
-    "name": "Nome Completo",
-    "email": "email@exemplo.com",
-    "password": "senha123",
-    "confirmPassword": "senha123",
-    "birthDate": "2000-01-01"
-  }
-  ```
-
-### Itens de Senha (necessita autenticação)
-
-- **GET /items**: Listar todos os items de senha do usuário
-
-- **POST /item**: Adicionar um novo item
-  ```json
-  {
-    "name": "Facebook",
-    "password": "senhaSegura123"
-  }
-  ```
-
-- **GET /item/{id}**: Buscar um item de senha por ID
-
-- **DELETE /item/{id}**: Deletar um item de senha 
+``` 

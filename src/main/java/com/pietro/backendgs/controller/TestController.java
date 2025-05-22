@@ -17,13 +17,4 @@ public class TestController {
         response.put("timestamp", System.currentTimeMillis());
         return response;
     }
-    
-    @GetMapping("/api/test")
-    public Map<String, Object> testApiEndpoint() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", "success");
-        response.put("message", "API endpoint is accessible");
-        response.put("timestamp", System.currentTimeMillis());
-        return response;
-    }
 } 
