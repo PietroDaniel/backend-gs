@@ -1,16 +1,26 @@
 # Backend Gerador de Senhas
 
-API RESTful para o aplicativo de Gerador de Senhas, desenvolvido com Spring Boot.
+API RESTful desenvolvida com Spring Boot para o aplicativo Gerador de Senhas.
 
-## Requisitos
+## 📋 Índice
+
+- [Requisitos](#-requisitos)
+- [Tecnologias](#-tecnologias)
+- [Endpoints da API](#-endpoints-da-api)
+- [Instalação e Configuração](#-instalação-e-configuração)
+- [Banco de Dados](#-banco-de-dados)
+- [Executando o Projeto](#-executando-o-projeto)
+- [Solução de Problemas](#-solução-de-problemas)
+
+## 🚀 Requisitos
 
 - Java 21 ou superior
 - Maven 3.6 ou superior
 - MySQL 8.0 ou superior
-- Node.js 18.x ou superior (apenas para o frontend)
-- npm 9.x ou superior (apenas para o frontend)
+- Node.js 18.x ou superior (para o frontend)
+- npm 9.x ou superior (para o frontend)
 
-## Tecnologias e Dependências
+## 🛠️ Tecnologias
 
 ### Core
 - Spring Boot 3.4.5
@@ -22,308 +32,170 @@ API RESTful para o aplicativo de Gerador de Senhas, desenvolvido com Spring Boot
 ### Banco de Dados
 - MySQL Connector J
 - JPA/Hibernate
-- Hikari Connection Pool
+- H2 Database (para testes)
 
 ### Segurança
 - JSON Web Token (JWT) 0.11.5
-  - jjwt-api
-  - jjwt-impl
-  - jjwt-jackson
 
 ### Utilitários
-- Lombok para redução de boilerplate code
-- H2 Database (disponível para testes)
+- Lombok
+- Maven
 
-## Como executar o projeto
+## 🔗 Endpoints da API
 
-### Clonando o repositório
+### Autenticação
 
+#### POST /signin
+- **Payload**: 
+  ```json
+  {
+    "email": "string",
+    "senha": "string"
+  }
+  ```
+- **Response**: 
+  ```json
+  {
+    "token": "string"
+  }
+  ```
+- **Validações**:
+  - Credenciais devem ser válidas
+
+#### POST /signup
+- **Payload**:
+  ```json
+  {
+    "email": "string",
+    "nome": "string",
+    "dataNascimento": "YYYY-MM-DD",
+    "senha": "string",
+    "confirmacaoSenha": "string"
+  }
+  ```
+- **Validações**:
+  - Email deve ser válido
+  - Email não pode estar em uso
+  - Senhas devem ser iguais
+  - Senha é armazenada criptografada
+
+### Gerenciamento de Itens
+
+#### POST /item
+- **Payload**:
+  ```json
+  {
+    "nome": "string",
+    "senha": "string"
+  }
+  ```
+- **Validações**:
+  - Nome do item não pode estar em uso
+
+#### DELETE /item/:id
+- **Parâmetro**: ID do item na URL
+
+#### GET /items
+- **Response**: Lista de itens do usuário
+
+## 💻 Instalação e Configuração
+
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/atividade-desenv-mobile.git
+   cd atividade-desenv-mobile/backend-gs
+   ```
+
+2. Instale as dependências:
+   ```bash
+   mvn clean install
+   ```
+
+## 🗄️ Banco de Dados
+
+### Instalação do MySQL
+
+#### Windows
+1. Baixe o instalador em https://dev.mysql.com/downloads/installer/
+2. Execute o instalador e siga as instruções
+3. Inicie o serviço: `net start mysql`
+
+#### Linux (Ubuntu/Debian)
 ```bash
-git clone https://github.com/seu-usuario/atividade-desenv-mobile.git
-cd atividade-desenv-mobile
+sudo apt update
+sudo apt install mysql-server
+sudo systemctl start mysql
+sudo systemctl enable mysql
 ```
 
-### Configurando o banco de dados MySQL
+#### macOS
+```bash
+brew install mysql
+brew services start mysql
+```
 
-1. Instale o MySQL Server em sua máquina, caso ainda não tenha:
-   - **Windows**: Download do instalador em https://dev.mysql.com/downloads/installer/
-   - **Linux (Ubuntu/Debian)**: `sudo apt install mysql-server`
-   - **macOS**: `brew install mysql`
+### Configuração do Banco
 
-2. Inicie o serviço MySQL:
-   - **Windows**: Através do MySQL Workbench ou do serviço no Windows
-     ```bash
-     net start mysql
-     ```
-   - **Linux**: 
-     ```bash
-     sudo systemctl start mysql
-     sudo systemctl enable mysql # para iniciar automaticamente
-     ```
-   - **macOS**: 
-     ```bash
-     brew services start mysql
-     ```
+1. Acesse o MySQL:
+   ```bash
+   mysql -u root -p
+   ```
 
-3. Crie um usuário e configure a senha:
+2. Configure o usuário:
    ```sql
    CREATE USER 'root'@'localhost' IDENTIFIED BY 'root';
    GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost';
    FLUSH PRIVILEGES;
    ```
 
-4. O banco de dados `passworddb` será criado automaticamente ao iniciar a aplicação graças à configuração `createDatabaseIfNotExist=true` no application.properties.
+> O banco `passworddb` será criado automaticamente ao iniciar a aplicação.
 
-### Configuração do Backend
+## ▶️ Executando o Projeto
 
-As configurações do backend estão definidas nos seguintes arquivos:
-
-#### application.properties
-```properties
-# Configurações do servidor
-server.port=8080
-server.servlet.context-path=/
-
-# Configurações do banco de dados MySQL
-spring.datasource.url=jdbc:mysql://localhost:3306/passworddb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver
-spring.datasource.username=root
-spring.datasource.password=root
-spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
-spring.jpa.hibernate.ddl-auto=update
-
-# Configurações adicionais do MySQL
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
-spring.datasource.hikari.maximum-pool-size=10
-
-# Configurações do Hibernate
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-
-# Configurações de logging
-logging.level.org.springframework.security=DEBUG
-logging.level.com.pietro.backendgs=DEBUG
-```
-
-#### jwt.properties
-```properties
-# Configurações JWT personalizadas
-app.jwt.secret=minhaSenhaSecretaBemGrandeParaSerUsadaNoAppDeGeradorDeSenhas2024
-app.jwt.expiration=86400000  # 24 horas em milissegundos
-```
-
-> **Importante**: Em ambiente de produção, altere as credenciais do banco de dados e a chave secreta do JWT.
-
-### Configuração de CORS (Cross-Origin Resource Sharing)
-
-O backend está configurado para aceitar requisições de diferentes origens, especialmente importante para o desenvolvimento web e mobile. As configurações estão em:
-
-#### WebConfig.java
-```java
-registry.addMapping("/**")
-        .allowedOrigins("*")
-        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-        .allowedHeaders("*")
-        .exposedHeaders("*")
-        .allowCredentials(false)
-        .maxAge(3600);
-```
-
-#### SecurityConfig.java - Configuração para origens específicas (alternativa)
-```java
-configuration.setAllowedOrigins(List.of(
-    "http://localhost:3000", 
-    "http://localhost:8081", 
-    "http://127.0.0.1:8081",
-    "http://localhost:19006" // Expo Web
-));
-```
-
-### Executando o Backend
-
-#### Usando Maven Wrapper (recomendado)
+### Usando Maven Wrapper
 ```bash
-# Navegar para a pasta do backend
-cd backend-gs
-
-# Compilação completa com testes
-./mvnw clean install
-
-# Executar a aplicação
 ./mvnw spring-boot:run
 ```
 
-#### Usando Maven diretamente
+### Usando Maven
 ```bash
-# Navegar para a pasta do backend
-cd backend-gs
-
-# Compilar sem executar testes
-mvn clean install -DskipTests
-
-# Compilar com testes
-mvn clean install
-
-# Executar a aplicação
 mvn spring-boot:run
 ```
 
-#### Gerando e executando o JAR
-```bash
-# Gerar o JAR
-mvn clean package
+O servidor estará disponível em: http://localhost:8080
 
-# Executar o JAR
-java -jar target/backend-gs-0.0.1-SNAPSHOT.jar
+## ❗ Solução de Problemas
 
-# Opcionalmente, especificar perfis ou sobrescrever propriedades:
-java -jar target/backend-gs-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod --server.port=9000
+### Erro de Conexão MySQL
+```
+Communications link failure
+```
+**Solução**: 
+- Verifique se o MySQL está rodando: `service mysql status`
+- Teste a conexão: `mysql -u root -p`
+
+### Erro de Autenticação MySQL
+```
+Access denied for user 'root'@'localhost'
+```
+**Solução**:
+```sql
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';
+FLUSH PRIVILEGES;
 ```
 
-O backend estará disponível em: http://localhost:8080
-
-## Estrutura do Projeto
-
+### Erro de CORS
 ```
-backend-gs/
-├── src/main/java/com/pietro/backendgs/
-│   ├── auth/                 # Configurações de autenticação
-│   ├── config/               # Configurações da aplicação
-│   ├── controller/           # Controladores REST
-│   ├── exception/            # Manipulação de exceções
-│   ├── model/                # Entidades e DTOs
-│   ├── repository/           # Interfaces de acesso aos dados
-│   ├── security/             # Implementação de segurança JWT
-│   ├── service/              # Camada de regra de negócios
-│   └── BackendGsApplication.java  # Classe principal
-├── src/main/resources/
-│   ├── application.properties # Configurações principais
-│   └── jwt.properties        # Configurações JWT
+Access to XMLHttpRequest has been blocked by CORS policy
 ```
+**Solução**: 
+- Verifique as configurações CORS em `WebConfig.java`
+- Configure o frontend para usar `withCredentials: false`
 
-## Endpoints da API
+## 📝 Licença
 
-### Autenticação
+Este projeto está sob a licença BSD Zero Clause.
 
-- **POST /signin**: Login de usuário
-  - Payload: `{ "email": "string", "password": "string" }`
-  - Resposta: `{ "token": "string", "id": number, "name": "string", "email": "string" }`
+## 👥 Autor
 
-- **POST /signup**: Cadastro de usuário
-  - Payload: `{ "name": "string", "email": "string", "password": "string", "confirmPassword": "string", "birthDate": "YYYY-MM-DD" }`
-  - Resposta: Mensagem de sucesso ou erro
-
-### Itens
-
-- **POST /item**: Criar novo item
-  - Payload: `{ "name": "string", "password": "string" }`
-  - Resposta: Item criado com ID
-
-- **GET /items**: Listar todos os itens do usuário
-  - Resposta: Lista de itens
-
-- **DELETE /item/:id**: Excluir um item específico
-  - Resposta: Mensagem de confirmação
-
-- **GET /item/:id**: Buscar um item específico por ID
-  - Resposta: Detalhes do item
-
-### Teste
-
-- **GET /test**: Verificar se a API está funcionando
-  - Resposta: Status da API
-
-## Solucionando problemas comuns
-
-### Problemas com o MySQL
-
-1. **Erro de conexão com o MySQL**:
-   ```
-   Communications link failure
-   ```
-   Soluções:
-   - Verifique se o serviço MySQL está rodando: `service mysql status`
-   - Teste a conexão com o comando: `mysql -u root -p`
-   - Verifique o firewall: `sudo ufw status` e libere a porta se necessário: `sudo ufw allow 3306`
-
-2. **Erro de autenticação MySQL**:
-   ```
-   Access denied for user 'root'@'localhost'
-   ```
-   Soluções:
-   - Redefina a senha do usuário root:
-     ```sql
-     ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';
-     FLUSH PRIVILEGES;
-     ```
-   - Verifique se as credenciais em `application.properties` estão corretas
-
-3. **Erro de timezone MySQL**:
-   ```
-   The server time zone value is unrecognized
-   ```
-   Solução:
-   - Adicione `serverTimezone=UTC` à URL de conexão (já configurado no application.properties)
-
-### Problemas de CORS
-
-1. **Erros de CORS no frontend**:
-   ```
-   Access to XMLHttpRequest has been blocked by CORS policy
-   ```
-   Soluções:
-   - Verifique se a configuração de CORS está correta em `WebConfig.java`
-   - Para desenvolvimento local, use origens explícitas em vez de "*" se precisar de credentials:
-     ```java
-     .allowedOrigins("http://localhost:19006", "http://localhost:3000")
-     .allowCredentials(true)
-     ```
-   - No frontend, defina `withCredentials: false` nas configurações do Axios
-
-2. **Erro de credenciais e wildcard CORS**:
-   ```
-   The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '*' when the request's credentials mode is 'include'
-   ```
-   Solução:
-   - Não é possível usar `allowedOrigins("*")` com `allowCredentials(true)`. Escolha origens específicas se precisar de credenciais.
-
-### Problemas de JWT
-
-1. **Token expirado ou inválido**:
-   ```
-   JWT signature does not match locally computed signature
-   ```
-   Soluções:
-   - Verifique se a configuração de JWT em `jwt.properties` está correta
-   - A propriedade `app.jwt.expiration` é em milissegundos (86400000 = 24 horas)
-   - O frontend deve enviar o token no formato: `Authorization: Bearer {token}`
-
-2. **Erro de assinatura JWT**:
-   ```
-   JWT verification failed
-   ```
-   Solução:
-   - Garanta que a mesma chave secreta está sendo usada para assinar e verificar tokens:
-     ```properties
-     app.jwt.secret=minhaSenhaSecretaBemGrandeParaSerUsadaNoAppDeGeradorDeSenhas2024
-     ```
-
-## Comandos úteis para desenvolvimento
-
-```bash
-# Verificar logs da aplicação em tempo real
-mvn spring-boot:run | grep -i error
-
-# Executar com perfil específico
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
-
-# Gerar JAR e executar em modo debug
-mvn clean package
-java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -jar target/backend-gs-0.0.1-SNAPSHOT.jar
-
-# Executar somente testes específicos
-mvn test -Dtest=AuthServiceTest
-
-# Limpar cache Maven (útil para resolver problemas de dependências)
-mvn dependency:purge-local-repository
-``` 
+- **Pietro** - [GitHub](https://github.com/seu-usuario) 
