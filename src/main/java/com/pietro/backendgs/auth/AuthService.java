@@ -57,17 +57,14 @@ public class AuthService {
     }
 
     public void registerUser(SignupRequest signupRequest) {
-        // Verifique se o email já existe
         if (usuarioRepository.existsByEmail(signupRequest.getEmail())) {
             throw new EmailAlreadyExistsException("Email já está em uso!");
         }
 
-        // Verifique se as senhas coincidem
         if (!signupRequest.getPassword().equals(signupRequest.getConfirmPassword())) {
             throw new PasswordMismatchException("As senhas não coincidem!");
         }
 
-        // Crie um novo usuário
         Usuario usuario = new Usuario();
         usuario.setNome(signupRequest.getName());
         usuario.setEmail(signupRequest.getEmail());

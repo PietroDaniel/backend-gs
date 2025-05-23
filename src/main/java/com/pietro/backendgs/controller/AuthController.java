@@ -77,7 +77,6 @@ public class AuthController {
             
             log.info("Parsed request values - name: {}, email: {}, birthDate: {}", name, email, birthDateStr);
             
-            // Validações básicas
             if (name == null || email == null || password == null || confirmPassword == null || birthDateStr == null) {
                 return ResponseEntity.badRequest().body("Todos os campos são obrigatórios");
             }
@@ -90,7 +89,6 @@ public class AuthController {
                 return ResponseEntity.badRequest().body("Email já está em uso");
             }
             
-            // Converter a data
             LocalDate birthDate;
             try {
                 if (birthDateStr.contains("/")) {
@@ -103,7 +101,6 @@ public class AuthController {
                 return ResponseEntity.badRequest().body("Formato de data inválido. Use DD/MM/AAAA ou AAAA-MM-DD");
             }
             
-            // Criar e salvar usuário
             Usuario usuario = new Usuario();
             usuario.setNome(name);
             usuario.setEmail(email);

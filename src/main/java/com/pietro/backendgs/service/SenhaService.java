@@ -33,7 +33,6 @@ public class SenhaService {
 	public SenhaResponse criarSenha(SenhaRequest senhaRequest) throws GsException {
 		Usuario usuarioAutenticado = authService.getUsuarioAutenticado();
 		
-		// Verificar se já existe um item com o mesmo nome para o usuário
 		if (senhaRepository.existsByNomeAndUsuario(senhaRequest.getName(), usuarioAutenticado)) {
 			throw new GsException("Já existe um item com este nome para o usuário.", HttpStatus.BAD_REQUEST);
 		}
@@ -50,11 +49,9 @@ public class SenhaService {
 
 	public void excluirSenha(Long senhaId) throws GsException {
 		Usuario usuarioAutenticado = authService.getUsuarioAutenticado();
-		// Verify that the password exists and belongs to the current user before deleting
 		senhaRepository.findByIdSenhaAndUsuario(senhaId, usuarioAutenticado)
 				.orElseThrow(() -> new GsException("Senha não encontrada ou não pertence ao usuário atual.", HttpStatus.NOT_FOUND));
 		
-		// Delete físico: remover o registro do banco de dados
 		senhaRepository.deleteById(senhaId);
 	}
 

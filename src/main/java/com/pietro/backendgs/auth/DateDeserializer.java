@@ -41,7 +41,6 @@ public class DateDeserializer extends JsonDeserializer<LocalDate> {
                 log.info("Successfully parsed date with format {}: {}", formatter, date);
                 return date;
             } catch (DateTimeParseException e) {
-                // Continue trying other formats
                 log.debug("Failed to parse date {} with format {}", dateText, formatter);
             }
         }

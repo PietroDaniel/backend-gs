@@ -63,7 +63,6 @@ public class JwtUtils {
                 .parseClaimsJws(authToken)
                 .getBody();
             
-            // Check if token is expired
             Date expiration = claims.getExpiration();
             Date now = new Date();
             if (expiration != null && expiration.before(now)) {
@@ -71,7 +70,6 @@ public class JwtUtils {
                 return false;
             }
             
-            // Additional debug information
             String subject = claims.getSubject();
             Date issuedAt = claims.getIssuedAt();
             log.debug("JWT token validated successfully. Subject: {}, Issued at: {}, Expires: {}", 
